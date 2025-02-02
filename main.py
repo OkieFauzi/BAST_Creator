@@ -2,6 +2,8 @@ import os
 import pandas as pd
 from openpyxl import load_workbook
 from fpdf import FPDF
+from utils import spell_date
+from fpdf import FPDF
 
 # Step 1: Read data from a single source file
 def read_source_data(source_file):
@@ -13,6 +15,15 @@ def fill_excel_form(template_file, output_file, data):
     # Load the template workbook
     wb = load_workbook(template_file)
     sheet = wb["MASTER"]
+
+    # Get BAPWP and BAUT opener
+    day = spell_date(data["Tanggal PKS"], return_format="day")
+    date = spell_date(data["Tanggal PKS"], return_format="date")
+    month = spell_date(data["Tanggal PKS"], return_format="month")
+    year = spell_date(data["Tanggal PKS"], return_format="year")
+
+    BAPWP_opener = f"'Pada hari ini {day} Tanggal {date} Bulan {month} Tahun {year}, telah "
+    BAUT_opener = f"''Pada hari ini {day} Tanggal {date} Bulan {month} Tahun {year}, kami yang bertanda tangan"
 
     # Replace placeholders with actual data (update the cell references as needed)
     sheet["F5"] = data.get("Project ID", "")  
@@ -38,6 +49,9 @@ def fill_excel_form(template_file, output_file, data):
     sheet["F26"] = data.get("Nama Manager Asset", "")  
     sheet["C27"] = data.get("Jabatan Asman Asset", "")  
     sheet["F27"] = data.get("Nama Asman Asset", "")
+    sheet["J10"] = data.get("Jangka Waktu Kerja", "")
+    sheet["F31"] = BAPWP_opener
+    sheet["F32"] = BAUT_opener
 
     # Save the filled form with a custom filename
     wb.save(output_file)
