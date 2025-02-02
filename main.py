@@ -17,13 +17,13 @@ def fill_excel_form(template_file, output_file, data):
     sheet = wb["MASTER"]
 
     # Get BAPWP and BAUT opener
-    day = spell_date(data["Tanggal PKS"], return_format="day")
-    date = spell_date(data["Tanggal PKS"], return_format="date")
-    month = spell_date(data["Tanggal PKS"], return_format="month")
-    year = spell_date(data["Tanggal PKS"], return_format="year")
+    day = spell_date(data["Tanggal PO"], return_format="day")
+    date = spell_date(data["Tanggal PO"], return_format="date")
+    month = spell_date(data["Tanggal PO"], return_format="month")
+    year = spell_date(data["Tanggal PO"], return_format="year")
 
-    BAPWP_opener = f"'Pada hari ini {day} Tanggal {date} Bulan {month} Tahun {year}, telah "
-    BAUT_opener = f"''Pada hari ini {day} Tanggal {date} Bulan {month} Tahun {year}, kami yang bertanda tangan"
+    BAPWP_opener = f"Pada hari ini {day} Tanggal {date} Bulan {month} Tahun {year}, telah "
+    BAUT_opener = f"Pada hari ini {day} Tanggal {date} Bulan {month} Tahun {year}, kami yang bertanda tangan"
 
     # Replace placeholders with actual data (update the cell references as needed)
     sheet["F5"] = data.get("Project ID", "")  
