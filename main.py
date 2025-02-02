@@ -1,26 +1,45 @@
+import os
 import pandas as pd
 from openpyxl import load_workbook
 from fpdf import FPDF
 
-# Step 1: Read data from the source Excel file
+# Step 1: Read data from a single source file
 def read_source_data(source_file):
     # Load the data into a pandas DataFrame
-    df = pd.read_excel(source_file)
-    return df
+    return pd.read_excel(source_file)
 
 # Step 2: Fill the Excel form template
 def fill_excel_form(template_file, output_file, data):
     # Load the template workbook
     wb = load_workbook(template_file)
-    sheet = wb.active
+    sheet = wb["MASTER"]
 
-    # Example: Assuming the form has placeholders like "{{name}}" in cell A1
-    # Replace placeholders with actual data
-    sheet["A1"] = data["name"]  # Replace "name" with the actual key from your data
-    sheet["B1"] = data["age"]   # Replace "age" with the actual key from your data
-    sheet["C1"] = data["email"] # Replace "email" with the actual key from your data
+    # Replace placeholders with actual data (update the cell references as needed)
+    sheet["F5"] = data.get("Project ID", "")  
+    sheet["F6"] = data.get("Site Name PO", "")  
+    sheet["F7"] = data.get("Site Name Tenant", "")  
+    sheet["F8"] = data.get("Site ID", "")  
+    sheet["F9"] = data.get("PKS No", "")  
+    sheet["H9"] = data.get("Tanggal PKS", "")  
+    sheet["F10"] = data.get("PO No", "")  
+    sheet["H10"] = data.get("Tanggal PO", "")  
+    sheet["F11"] = data.get("Tipe Tower", "")  
+    sheet["G11"] = data.get("Height", "")  
+    sheet["F12"] = data.get("Alamat", "")  
+    sheet["G13"] = data.get("Long", "")  
+    sheet["G14"] = data.get("Lat", "")  
+    sheet["F15"] = data.get("SOW", "")  
+    sheet["F16"] = data.get("Area", "")  
+    sheet["F17"] = data.get("Mitra", "")  
+    sheet["F18"] = data.get("Nilai Kontrak", "")  
+    sheet["C25"] = data.get("Jabatan GM", "")  
+    sheet["F25"] = data.get("Nama GM", "")  
+    sheet["C26"] = data.get("Jabatan Manager Asset", "")  
+    sheet["F26"] = data.get("Nama Manager Asset", "")  
+    sheet["C27"] = data.get("Jabatan Asman Asset", "")  
+    sheet["F27"] = data.get("Nama Asman Asset", "")
 
-    # Save the filled form
+    # Save the filled form with a custom filename
     wb.save(output_file)
 
 # Step 3: Generate PDF from the filled data
@@ -40,26 +59,41 @@ def generate_pdf(output_file, data):
 
 # Main function
 def main():
-    source_file = "source.xlsx"       # Source Excel file with data
-    template_file = "template.xlsx"  # Excel form template
-    filled_excel = "filled_form.xlsx" # Filled form output
-    pdf_output = "output_form.pdf"   # PDF output
+    source_folder = "sources_file"  # Folder containing source.xlsx and template.xlsx
+    source_file = os.path.join(source_folder, "source.xlsx")
+    template_file = os.path.join(source_folder, "template.xlsx")
+
+    # Ensure source and template files exist
+    if not os.path.exists(source_file):
+        print(f"Source file not found: {source_file}")
+        return
+    if not os.path.exists(template_file):
+        print(f"Template file not found: {template_file}")
+        return
+
+    # Ensure output directory exists
+    output_folder = "output_file"
+    os.makedirs(output_folder, exist_ok=True)
 
     # Read source data
     source_data = read_source_data(source_file)
 
-    # Iterate over each row in the source data
+    # Process each row in the source data
     for index, row in source_data.iterrows():
-        # Convert the row to a dictionary
-        data = row.to_dict()
+        data = row.to_dict()  # Convert row to dictionary
+        record_number = index + 1
+
+        # Generate output file paths
+        filled_excel = os.path.join(output_folder, f"BAST_{data['SOW']}_{data['Project ID']}_{data['Site Name Tenant']}.xlsx")
+        pdf_output = os.path.join(output_folder, f"form_data{record_number}.pdf")
 
         # Fill the Excel form
         fill_excel_form(template_file, filled_excel, data)
 
-        # Generate PDF from the data
-        generate_pdf(pdf_output, data)
+        # Generate PDF
+        # generate_pdf(pdf_output, data)
 
-        print(f"Processed record {index + 1}: {data}")
+        print(f"Processed Record {record_number}: {data['SOW']} - {data['Project ID']} - {data['Site Name Tenant']}")
 
 if __name__ == "__main__":
     main()
